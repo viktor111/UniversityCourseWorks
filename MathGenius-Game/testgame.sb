@@ -1,0 +1,158 @@
+equationCounter = 0
+points = 0
+equationSolution = 0
+infiniteMode = "False"
+
+Sub mainWindow
+  GraphicsWindow.Width = 800
+  GraphicsWindow.Height = 600
+  GraphicsWindow.FontSize = 21
+  GraphicsWindow.Title = "Math Genius"
+  
+  GraphicsWindow.BackgroundColor = "Moccasin"
+  GraphicsWindow.Show() 
+
+EndSub
+
+Sub easyEquationGenerator
+  number1 = Math.GetRandomNumber(10)
+  number2 = Math.GetRandomNumber(10)
+  
+  remainder = Math.Remainder(equationCounter, 2)
+  
+  If remainder = 0 Then
+    equation = Text.Append(number1,"-")
+    
+    GraphicsWindow.DrawText(300, 250, equation + number2)
+   
+    equationSolution = number1 - number2
+  EndIf
+  If remainder = 1 Then
+    equation = Text.Append(number1,"+")
+    GraphicsWindow.DrawText(300, 250, equation + number2)
+    equationSolution = number1 + number2
+  EndIf
+EndSub
+
+Sub mediumEquationGenerator
+  number1 = Math.GetRandomNumber(100)
+  number2 = Math.GetRandomNumber(100)
+  
+  remainder = Math.Remainder(equationCounter, 2)
+  
+  If remainder = 0 Then
+    equation = Text.Append(number1,"-")
+    GraphicsWindow.DrawText(300, 250, equation + number2)
+    equationSolution = number1 - number2
+  EndIf
+  If remainder = 1 Then
+    equation = Text.Append(number1,"+")
+    GraphicsWindow.DrawText(300, 250, equation + number2)
+    equationSolution = number1 + number2
+  EndIf
+EndSub
+
+Sub hardEquationGenerator
+  number1 = Math.GetRandomNumber(1000)
+  number2 = Math.GetRandomNumber(1000)
+  number3 = Math.GetRandomNumber(1000)
+  
+  remainder = Math.Remainder(equationCounter, 2)
+  
+  If remainder = 0 Then
+    equationPart1 = Text.Append(number1,"-")
+    equationPart2 = Text.Append(number2, "+")
+    
+    GraphicsWindow.DrawText(300, 250, Text.Append(equationPart1, equationPart2) + number3)
+    equationSolution = number1 - number2 + number3
+  EndIf
+  If remainder = 1 Then
+    equationPart1 = Text.Append(number1,"+")
+    equationPart2 = Text.Append(number2, "-")
+    
+    
+    GraphicsWindow.DrawText(300, 250, Text.Append(equationPart1, equationPart2) + number3)
+    equationSolution = number1 + number2 - number3
+  EndIf
+EndSub
+
+Sub mainMenu
+  startButton = Controls.AddButton("Start", 40, 30)
+  startButtonInfiniteMode = Controls.AddButton("Start Infinte", 40, 150)
+  Controls.ButtonClicked = startTerminal
+  menuText1 = "Solve the problems and earn points your goal is to get 10 points."
+  menuText2 = "If you solve wrong you lose 1 point if points reach -1 you lose."
+  menuText3 = "The more points you gain the harder it gets."
+  menuText4 = "Math Genius, game by Viktor Draganov"
+  menuText5 = "Infinte mode lets you solve as much as you want without an end."
+  GraphicsWindow.DrawText(100, 30,menuText1)
+  GraphicsWindow.DrawText(100, 50,menuText2)
+  GraphicsWindow.DrawText(100, 70,menuText3)
+  GraphicsWindow.DrawText(150, 150, menuText5)
+  GraphicsWindow.FontSize = 30
+  GraphicsWindow.DrawText(100, 300,menuText4)
+EndSub
+
+Sub startTerminal
+  lastBtnClicked = Controls.LastClickedButton
+  If lastBtnClicked = startButtonInfiniteMode Then
+    infiniteMode = "True"    
+  EndIf
+  GraphicsWindow.Clear()
+  If points < 3 Then 
+    GraphicsWindow.BackgroundColor = "Silver"
+    GraphicsWindow.DrawText(600, 10, "Level: easy")
+    easyEquationGenerator()
+  EndIf
+  
+  If points >= 3 And points < 5 Then
+    GraphicsWindow.BackgroundColor = "Moccasin"
+    GraphicsWindow.DrawText(600, 10, "Level: medium")
+    mediumEquationGenerator()
+  ElseIf points >= 5 Then
+    GraphicsWindow.BackgroundColor = "DarkRed"
+    GraphicsWindow.DrawText(600, 10, "Level: hard")
+    hardEquationGenerator()
+  EndIf
+  
+  Controls.ButtonClicked = enterCommand
+  Controls.Remove(startButton)
+  inputField = Controls.AddTextBox(260, 450)
+  enter = Controls.AddButton("Enter guess", 270, 480)
+  GraphicsWindow.DrawText(10,10,"Guess: ")
+  GraphicsWindow.DrawText(300,10,"Points: ")
+  GraphicsWindow.DrawText(377, 10, points)
+  
+  If points = -1 Then
+    GraphicsWindow.Clear()
+    GraphicsWindow.BackgroundColor = "red"
+    GraphicsWindow.DrawText(100, 200, "You lost start again")
+  EndIf
+  If infiniteMode = "False" Then
+    If points = 10 Then
+      GraphicsWindow.Clear()
+      GraphicsWindow.BackgroundColor = "green"
+      GraphicsWindow.PenColor = "white"
+      GraphicsWindow.DrawText(100, 200, "You win and become math genius")
+    EndIf
+  EndIf
+ 
+EndSub
+
+Sub enterCommand
+  equationCounter = equationCounter + 1
+  lastButtonClicked = Controls.LastClickedButton
+  command = Controls.GetTextBoxText(inputField)
+  If command = equationSolution Then
+    points = points + 1
+  Else
+    points = points - 1
+  EndIf
+  GraphicsWindow.Clear()
+  startTerminal()
+  
+  GraphicsWindow.DrawText(80,10,command)
+EndSub
+
+mainMenu()
+mainWindow()
